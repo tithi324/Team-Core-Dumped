@@ -37,4 +37,3 @@ The goal is to make learning **adaptive, engaging, and effective**.
 
 ---
 
-## 📂 Project Structure
