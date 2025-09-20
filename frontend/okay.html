@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@700&family=Inter:wght@400&display=swap"
+        rel="stylesheet" />
+    <title>Learning Style</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-[#131d49] text-white min-h-screen py-10 px-4">
+    
+    <div class="max-w-5xl mx-auto">
+        
+        <div class="text-center mb-8 md:mb-12 bg-black text-white p-4 text-4xl font-bold rounded-xl" id="subject-name">
+            Subject
+        </div>
+
+        
+        <div id="topicButtons" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 px-2"></div>
+
+        
+        <div class="bg-black rounded-xl p-6 mx-2 shadow-[0_0_30px_rgba(0,123,255,0.7)] text-white whitespace-pre-wrap leading-relaxed"
+            id="topic-desc">
+        </div>
+
+        
+        <div class="mt-10 space-y-4" id="quizArea"></div>
+        <button id="submitQuiz"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded mt-4 hidden">
+            Submit Quiz
+        </button>
+        <div id="quizResult" class="text-green-400 font-bold mt-4"></div>
+
+        
+        <div class="bg-black rounded-xl p-6 mt-16">
+            <h1 class="text-4xl font-bold mb-6 text-center" style="font-family: 'Lexend', sans-serif;">
+                What’s Your Learning Approach?
+            </h1>
+            <p class="text-md mb-8 text-center italic" style="font-family: 'Inter', sans-serif;">
+                Choose the option that best reflects your natural tendency when learning something new.
+            </p>
+
+            <div id="quizQuestions" class="space-y-8">
+                
+            </div>
+
+            <div class="flex flex-col mb-4 mt-6">
+                <label for="topic" class="mb-2 font-semibold">What is the topic you are interested to learn:</label>
+                <input type="text" id="topic" placeholder="Enter your topic here..."
+                    class="bg-white border border-gray-300 text-black rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 placeholder-gray-500" />
+            </div>
+
+            <div class="flex justify-center mt-6">
+                <button id="submitButton"
+                    class="bg-[#131d49] text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:bg-blue-600 hover:shadow-lg transition duration-300">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "1. When starting a new project or skill, you prefer to:",
+                options: [
+                    "Start doing it right away and figure things out as you go",
+                    "Research and understand the basics before beginning",
+                    "Look for a clear step-by-step guide or tutorial",
+                    "Observe someone else doing it, then try it yourself"
+                ]
+            },
+            {
+                q: "2. If you’re learning a new software/tool, you usually:",
+                options: [
+                    "Click around and explore it on your own",
+                    "Read the documentation or watch intro videos first",
+                    "Follow a structured course or walkthrough",
+                    "Ask someone to show you how, then replicate it"
+                ]
+            },
+            {
+                q: "3. When solving a problem, your instinct is to:",
+                options: [
+                    "Try different things until something works",
+                    "Understand the theory or logic before attempting",
+                    "Follow a known process or best practice",
+                    "Combine examples or techniques you've seen before"
+                ]
+            },
+            {
+                q: "4. In a group learning environment, you:",
+                options: [
+                    "Jump ahead and experiment while others are still watching",
+                    "Prefer to ask deep questions before starting",
+                    "Wait for clear instructions before proceeding",
+                    "Learn best by watching others first, then doing it"
+                ]
+            },
+            {
+                q: "5. When building something new (like a website or DIY project):",
+                options: [
+                    "Dive in and build – learn while doing",
+                    "Plan carefully, learn the relevant concepts, then start",
+                    "Follow a guide from start to finish",
+                    "Watch a video tutorial, then recreate it step by step"
+                ]
+            }
+        ];
+
+        const learnerTypeMap = {
+            A: "Hands-on (Experiential) Learner",
+            B: "Theoretical (Analytical) Learner",
+            C: "Structured (Guided) Learner",
+            D: "Observational (Visual) Learner"
+        };
+
+        const answerMap = ["A", "B", "C", "D"];
+
+        
+        const quizContainer = document.getElementById("quizQuestions");
+        questions.forEach((q, i) => {
+            const div = document.createElement("div");
+            div.innerHTML = `
+        <p class="font-semibold mb-3">${q.q}</p>
+        <div class="grid grid-cols-2 gap-4">
+          ${q.options.map((opt, idx) => `
+            <label class="flex items-center space-x-3 border-2 border-gray-700 rounded-lg p-3 cursor-pointer transition duration-300">
+              <input type="radio" name="q${i + 1}" value="${answerMap[idx]}" class="peer accent-blue-500">
+              <span>${opt}</span>
+            </label>
+          `).join('')}
+        </div>`;
+            quizContainer.appendChild(div);
+        });
+
+        document.getElementById("submitButton").addEventListener("click", () => {
+            const responses = [];
+
+            for (let i = 1; i <= 5; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) responses.push(selected.value);
+            }
+
+            if (responses.length < 5) {
+                alert("Please answer all questions before submitting.");
+                return;
+            }
+
+            const counts = { A: 0, B: 0, C: 0, D: 0 };
+            responses.forEach(val => counts[val]++);
+            const learnerType = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+
+            const topic = document.getElementById("topic").value.trim();
+            if (!topic) {
+                alert("Please enter a topic.");
+                return;
+            }
+
+            const payload = {
+                type: learnerTypeMap[learnerType],
+                subject: topic
+            };
+
+            fetch("http://127.0.0.1:9000/learn", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            })
+                .then(res => {
+                    if (!res.ok) throw new Error("API error");
+                    return res.json();
+                })
+                .then(data => {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        alert("No data received from API.");
+                        return;
+                    }
+
+                    
+                    document.getElementById("subject-name").innerText = `${topic} (${learnerTypeMap[learnerType]})`;
+
+                    
+                    const topicButtons = document.getElementById("topicButtons");
+                    topicButtons.innerHTML = "";
+
+                    data.forEach((item, index) => {
+                        const btn = document.createElement("button");
+                        btn.className = "bg-white text-slate-700 p-4 rounded-xl text-center font-semibold hover:shadow-xl focus:outline-none";
+                        btn.innerText = `Topic ${index + 1}`;
+                        btn.addEventListener("click", () => renderTopic(item));
+                        topicButtons.appendChild(btn);
+                    });
+
+                    renderTopic(data[0]); 
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Error fetching topic data.");
+                });
+        });
+
+        function renderTopic(topicData) {
+            const descDiv = document.getElementById("topic-desc");
+            const quizArea = document.getElementById("quizArea");
+            const submitBtn = document.getElementById("submitQuiz");
+            const resultDiv = document.getElementById("quizResult");
+
+            descDiv.innerText = topicData.explanation || "No explanation provided.";
+            quizArea.innerHTML = "";
+            resultDiv.innerText = "";
+
+            if (!topicData.quiz || !Array.isArray(topicData.quiz)) {
+                submitBtn.classList.add("hidden");
+                return;
+            }
+
+            topicData.quiz.forEach((q, idx) => {
+                const wrapper = document.createElement("div");
+                wrapper.className = "bg-gray-800 p-4 rounded-lg";
+
+                const question = document.createElement("p");
+                question.className = "font-semibold mb-2";
+                question.innerText = `${idx + 1}. ${q.question}`;
+                wrapper.appendChild(question);
+
+                q.options.forEach((opt, optIndex) => {
+                    const label = document.createElement("label");
+                    label.className = "block text-white mb-1";
+
+                    const input = document.createElement("input");
+                    input.type = "radio";
+                    input.name = `quiz-${idx}`;
+                    input.value = optIndex;
+                    input.className = "mr-2";
+
+                    label.appendChild(input);
+                    label.appendChild(document.createTextNode(opt));
+                    wrapper.appendChild(label);
+                });
+
+                quizArea.appendChild(wrapper);
+            });
+
+            submitBtn.classList.remove("hidden");
+
+            submitBtn.onclick = () => {
+                let correct = 0;
+                topicData.quiz.forEach((q, idx) => {
+                    const selected = document.querySelector(`input[name="quiz-${idx}"]:checked`);
+                    if (selected && parseInt(selected.value) === q.correct_option) {
+                        correct++;
+                    }
+                });
+                resultDiv.innerText = `You got ${correct} out of ${topicData.quiz.length} correct!`;
+            };
+        }
+    </script>
+</body>
+
+</html>
