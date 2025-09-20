@@ -47,15 +47,15 @@
         </div>
 
         
-        <div class="text-center mb-8 md:mb-12 bg-black text-white p-4 text-4xl font-bold rounded-xl" id="subject-name">
-            Subject
+        <div class="text-center mt-5 mb-8 md:mb-12 bg-black text-white p-4 text-4xl font-bold rounded-xl hidden" id="subject-name">
+            
         </div>
 
        
         <div id="topicButtons" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 px-2"></div>
 
         
-        <div class="bg-black rounded-xl p-6 mx-2 shadow-[0_0_30px_rgba(0,123,255,0.7)] text-white whitespace-pre-wrap leading-relaxed"
+        <div class="bg-black rounded-xl p-6 mx-2 shadow-[0_0_30px_rgba(0,123,255,0.7)] text-white whitespace-pre-wrap leading-relaxed hidden"
             id="topic-desc">
         </div>
 
@@ -187,8 +187,8 @@
                     }
 
                     
-                    document.getElementById("subject-name").innerText = `${topic} (${learnerTypeMap[learnerType]})`;
-
+                    document.getElementById("subject-name").innerText = `${topic}`;
+                    document.getElementById("subject-name").classList.remove('hidden');
                     
                     const topicButtons = document.getElementById("topicButtons");
                     topicButtons.innerHTML = "";
@@ -216,6 +216,7 @@
             const resultDiv = document.getElementById("quizResult");
 
             descDiv.innerText = topicData.explanation || "No explanation provided.";
+            descDiv.classList.remove('hidden');
             quizArea.innerHTML = "";
             resultDiv.innerText = "";
 
